@@ -63,7 +63,7 @@ end
     @test output[3] == test
     @test output[5] == test2
     # TODO @test the canvaas images == leonardo2
-    replay(output)
+    replay(output, ruleset)
     destroy(output.window)
 end
 

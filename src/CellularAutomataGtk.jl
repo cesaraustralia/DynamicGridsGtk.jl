@@ -1,15 +1,15 @@
 module CellularAutomataGtk
 
-using CellularAutomataBase, Cairo, Gtk, Images, Graphics
+using CellularAutomataBase, Cairo, Gtk, Images, Graphics, Colors
 
 # Mixins
-using CellularAutomataBase: @ImageProc, @Graphic, @Output, frametoimage
+using CellularAutomataBase: @ImageProc, @Graphic, @Output
 
 import CellularAutomataBase: showframe, isrunning
 
 export GtkOutput
 
-abstract type AbstractGtkOutput{T} <: AbstractGraphicOutput{T} end
+abstract type AbstractGtkOutput{T} <: AbstractImageOutput{T} end
 
 """
 Shows output live in a Gtk window.
@@ -48,11 +48,11 @@ GtkOutput(frames::AbstractVector; fps=25, showfps=fps, store=false, processor=Gr
     output
 end
 
-CellularAutomataBase.isrunning(o::GtkOutput) = o.running && o.canvas.is_realized
+CellularAutomataBase.isrunning(o::AbstractGtkOutput) = o.running && o.canvas.is_realized
 
-CellularAutomataBase.showframe(o::AbstractGtkOutput, frame::AbstractArray, t) = begin
+CellularAutomataBase.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, t) = begin
     # Cairo shows images permuted
-    img = permutedims(frametoimage(o, frame, t))
+    img = permutedims(image)
     println(t)
     Gtk.@guarded Gtk.draw(canvas(o)) do widget
         ctx = Gtk.getgc(canvas(o))
