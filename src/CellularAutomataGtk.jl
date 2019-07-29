@@ -61,4 +61,35 @@ CellularAutomataBase.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutp
     end
 end
 
+CellularAutomataBase.showframe(o::GtkOutput, data::CellularAutomataBase.AbstractSimData, t) = begin
+    # Cairo shows images permuted
+    normed = CellularAutomataBase.normaliseframe(data.ruleset, o[end])
+    img = similar(normed, RGB24)
+    r = CellularAutomataBase.maxradius(data.ruleset.rules)
+    blocksize = 2r
+    for i in CartesianIndices(normed)
+        blockindex = CellularAutomataBase.indtoblock.((i[1] + r,  i[2] + r), blocksize)
+        state = normed[i]
+        img[i] = if CellularAutomataBase.sourcestatus(data)[blockindex...]
+            if state > 0
+                RGB24(state)
+            else
+                RGB24(0.0, 0.5, 0.5)
+            end
+        elseif state > 0
+            RGB24(1.0, 0.0, 0.0)
+        else
+            RGB24(0.5, 0.5, 0.0)
+        end
+    end
+    img = permutedims(img)
+    println(t)
+    Gtk.@guarded Gtk.draw(o.canvas) do widget
+        ctx = Gtk.getgc(o.canvas)
+        Cairo.image(ctx, Cairo.CairoImageSurface(img), 0, 0,
+                    Graphics.width(ctx), Graphics.height(ctx))
+    end
+end
+
+
 end
