@@ -1,4 +1,4 @@
-using CellularAutomataBase, CellularAutomataGtk, Gtk, Test, Colors, ColorSchemes
+using DynamicGrids, DynamicGridsGtk, Gtk, Test, Colors, ColorSchemes
 
 # life glider sims
 
@@ -63,7 +63,6 @@ end
     @test output[3] == test
     @test output[5] == test2
     # TODO @test the canvaas images == leonardo2
-    replay(output, ruleset)
     destroy(output.window)
 end
 
@@ -86,11 +85,11 @@ end
 
     @testset "GtkOutput works" begin
         output = GtkOutput(int)
-        CellularAutomataBase.showframe(output, 1)
-        destroy(output.window)
+        DynamicGrids.showframe(output, 1)
+        Gtk.destroy(output.window)
 
         output = GtkOutput(flt)
-        CellularAutomataBase.showframe(output, 1)
-        destroy(output.window)
+        DynamicGrids.showframe(output, 1)
+        Gtk.destroy(output.window)
     end
 end
