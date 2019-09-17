@@ -18,4 +18,4 @@ optional, with defaults shown above.
 
 ## Documentation
 
-See the documentation for [DynamicGridsBase.jl](https://rafaqz.github.io/DynamicGridsBase.jl/dev/)
+See the documentation for [DynamicGrids.jl](https://rafaqz.github.io/DynamicGrids.jl/dev/)
