@@ -1,9 +1,9 @@
 # DynamicGridsGtk
 
-[![Build Status](https://travis-ci.org/rafaqz/DynamicGridsGtk.jl.svg?branch=master)](https://travis-ci.org/rafaqz/DynamicGridsGtk.jl) 
-[![codecov.io](http://codecov.io/github/rafaqz/DynamicGridsGtk.jl/coverage.svg?branch=master)](http://codecov.io/github/rafaqz/Cellular.jl?branch=master) 
+[![Build Status](https://travis-ci.org/cesaraustralia/DynamicGridsGtk.jl.svg?branch=master)](https://travis-ci.org/cesaraustralia/DynamicGridsGtk.jl) 
+[![codecov.io](http://codecov.io/github/cesaraustralia/DynamicGridsGtk.jl/coverage.svg?branch=master)](http://codecov.io/github/cesaraustralia/Cellular.jl?branch=master) 
 
-Provides a GTK interface for visualising simulations with DynamicGridsBase.jl
+Provides a GTK interface for visualising simulations with DynamicGrids.jl
 and packages that build on it like Dispersal.jl. 
 
 To use:
@@ -18,4 +18,4 @@ optional, with defaults shown above.
 
 ## Documentation
 
-See the documentation for [DynamicGrids.jl](https://rafaqz.github.io/DynamicGrids.jl/dev/)
+See the documentation for [DynamicGrids.jl](https://cesaraustralia.github.io/DynamicGrids.jl/dev/)

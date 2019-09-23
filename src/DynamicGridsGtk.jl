@@ -1,9 +1,11 @@
 module DynamicGridsGtk
+# Use the README as the module docs
+@doc read(joinpath(dirname(@__DIR__), "README.md"), String) DynamicGridsGtk
 
 using DynamicGrids, Cairo, Gtk, Images, Graphics, Colors
 
 # Mixins
-using DynamicGrids: @ImageProc, @Graphic, @Output
+using DynamicGrids: @Image, @Graphic, @Output
 
 import DynamicGrids: showframe, isrunning
 
@@ -14,11 +16,9 @@ abstract type AbstractGtkOutput{T} <: AbstractImageOutput{T} end
 """
 Shows output live in a Gtk window.
 """
-@ImageProc @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
+@Image @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
     window::W
-    canvas::C
-end
-
+    canvas::C end 
 window(o) = o.window
 canvas(o) = o.canvas
 
@@ -65,7 +65,7 @@ DynamicGrids.isasync(o::GtkOutput) = false
 
 # DynamicGrids.showframe(o::GtkOutput, data::DynamicGrids.AbstractSimData, t) = begin
 #     # Cairo shows images permuted
-#     normed = DynamicGrids.normaliseframe(data.ruleset, o[end])
+#     normed = DynamicGrids.normaliseframe(o, o[end])
 #     img = similar(normed, RGB24)
 #     r = DynamicGrids.maxradius(data.ruleset.rules)
 #     blocksize = 2r
