@@ -2,7 +2,7 @@ module DynamicGridsGtk
 # Use the README as the module docs
 @doc read(joinpath(dirname(@__DIR__), "README.md"), String) DynamicGridsGtk
 
-using DynamicGrids, Cairo, Gtk, Images, Graphics, Colors
+using DynamicGrids, Cairo, Gtk, Images, Graphics, Colors, FieldDefaults
 
 # Mixins
 using DynamicGrids: @Image, @Graphic, @Output
@@ -12,15 +12,6 @@ import DynamicGrids: showframe, isrunning
 export GtkOutput
 
 abstract type AbstractGtkOutput{T} <: AbstractImageOutput{T} end
-
-"""
-Shows output live in a Gtk window.
-"""
-@Image @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
-    window::W
-    canvas::C end 
-window(o) = o.window
-canvas(o) = o.canvas
 
 """
     GtkOutput(init)
@@ -34,26 +25,34 @@ Constructor for GtkOutput.
 - `fps`: frames per second
 - `showfps`: maximum displayed frames per second
 """
-GtkOutput(frames::AbstractVector; fps=25, showfps=fps, store=false, processor=ColorProcessor()) = begin
-    timestamp = 0.0; tref = 0; tlast = 1; running = false
+@Image @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
+    window::W | nothing
+    canvas::C | nothing
+end
+window(o) = o.window
+canvas(o) = o.canvas
 
+GtkOutput(frames::T, running::Bool, starttime::Any, stoptime::Any, fps::FPS, showfps::SFPS, 
+          timestamp::TS, stampframe::SF, store::Bool, processor::P, minval::Mi, maxval::Ma, 
+          window, canvas) where {T<:AbstractVector,FPS,SFPS,TS,SF,P,Mi,Ma} = begin
     canvas = Gtk.@GtkCanvas()
-    window = Gtk.Window(canvas, "Cellular GtkOuput")
-    show(canvas)
-    output = GtkOutput(frames[:], running, fps, showfps, timestamp, tref, tlast, store,
-                       processor, window, canvas)
+    window = Gtk.Window(canvas, "DynamicGrids Gtk Ouput")
+    output = GtkOutput{T,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
+                 frames[:], running, starttime, stoptime, fps, showfps, timestamp,
+                 stampframe, store, processor, minval, maxval, window, canvas)
 
     canvas.mouse.button1press = (widget, event) -> output.running = false
-    showframe(output, 1)
+    showframe(output)
     output
 end
 
+
 DynamicGrids.isrunning(o::AbstractGtkOutput) = o.running && o.canvas.is_realized
 
-DynamicGrids.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, t) = begin
+DynamicGrids.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, f) = begin
     # Cairo shows images permuted
     img = permutedims(image)
-    println(t)
+    println(f)
     Gtk.@guarded Gtk.draw(canvas(o)) do widget
         ctx = Gtk.getgc(canvas(o))
         Cairo.image(ctx, Cairo.CairoImageSurface(img), 0, 0,
@@ -62,35 +61,5 @@ DynamicGrids.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, t) =
 end
 
 DynamicGrids.isasync(o::GtkOutput) = false
-
-# DynamicGrids.showframe(o::GtkOutput, data::DynamicGrids.AbstractSimData, t) = begin
-#     # Cairo shows images permuted
-#     normed = DynamicGrids.normaliseframe(o, o[end])
-#     img = similar(normed, RGB24)
-#     r = DynamicGrids.maxradius(data.ruleset.rules)
-#     blocksize = 2r
-#     for i in CartesianIndices(normed)
-#         blockindex = DynamicGrids.indtoblock.((i[1] + r,  i[2] + r), blocksize)
-#         state = normed[i]
-#         img[i] = if DynamicGrids.sourcestatus(data)[blockindex...]
-#             if state > 0
-#                 RGB24(state)
-#             else
-#                 RGB24(0.0, 0.5, 0.5)
-#             end
-#         elseif state > 0
-#             RGB24(1.0, 0.0, 0.0)
-#         else
-#             RGB24(0.5, 0.5, 0.0)
-#         end
-#     end
-#     img = permutedims(img)
-#     println(t)
-#     Gtk.@guarded Gtk.draw(o.canvas) do widget
-#         ctx = Gtk.getgc(o.canvas)
-#         Cairo.image(ctx, Cairo.CairoImageSurface(img), 0, 0,
-#                     Graphics.width(ctx), Graphics.height(ctx))
-#     end
-# end
 
 end

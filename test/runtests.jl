@@ -49,7 +49,7 @@ ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
 
 @testset "converted results match glider behaviour" begin
     output = ArrayOutput(init, 5)
-    sim!(output, ruleset; tstop=5)
+    sim!(output, ruleset; tspan=(1, 5))
     output2 = GtkOutput(output)
     @test output2[3] == test
     @test output2[5] == test2
@@ -58,8 +58,8 @@ end
 
 @testset "GtkOutput works" begin
     output = GtkOutput(init; store=true)
-    sim!(output, ruleset; tstop=2)
-    resume!(output, ruleset; tadd=3)
+    sim!(output, ruleset; tspan=(1, 2))
+    resume!(output, ruleset; tstop=5)
     @test output[3] == test
     @test output[5] == test2
     # TODO @test the canvaas images == leonardo2
