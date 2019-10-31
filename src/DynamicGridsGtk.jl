@@ -15,6 +15,7 @@ abstract type AbstractGtkOutput{T} <: AbstractImageOutput{T} end
 
 """
     GtkOutput(init)
+
 Constructor for GtkOutput.
 
 ### Arguments:
@@ -42,7 +43,7 @@ GtkOutput(frames::T, running::Bool, starttime::Any, stoptime::Any, fps::FPS, sho
                  stampframe, store, processor, minval, maxval, window, canvas)
 
     canvas.mouse.button1press = (widget, event) -> output.running = false
-    showframe(output)
+    show(canvas)
     output
 end
 
