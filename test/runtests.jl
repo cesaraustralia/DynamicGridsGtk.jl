@@ -24,46 +24,48 @@ test2 = [0 0 0 0 0 0
          0 0 0 0 0 0]
 
 
-# TODO test Gtk canvas image
-g0 = RGB24(0)
-g1 = RGB24(1)
-grey2 = [g0 g0 g0 g0 g0 g0
-         g0 g0 g0 g0 g0 g0
-         g1 g0 g0 g0 g1 g1
-         g1 g0 g0 g0 g0 g0
-         g0 g0 g0 g0 g0 g1
-         g0 g0 g0 g0 g0 g0]
-
-l0 = get(ColorSchemes.leonardo, 0)
-l1 = get(ColorSchemes.leonardo, 1)
-
-leonardo2 = [l0 l0 l0 l0 l0 l0
-             l0 l0 l0 l0 l0 l0
-             l1 l0 l0 l0 l1 l1
-             l1 l0 l0 l0 l0 l0
-             l0 l0 l0 l0 l0 l1
-             l0 l0 l0 l0 l0 l0]
-
+@testset "Simulation" begin
 
 ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
 
-@testset "converted results match glider behaviour" begin
-    output = ArrayOutput(init, 5)
-    sim!(output, ruleset; tspan=(1, 5))
-    output2 = GtkOutput(output)
-    @test output2[3] == test
-    @test output2[5] == test2
-    destroy(output2.window)
-end
+    @testset "converted results from ArrayOutput match glider behaviour" begin
+        output = ArrayOutput(init, 5)
+        sim!(output, ruleset; tspan=(1, 5))
+        output2 = GtkOutput(output)
+        @test output2[3] == test
+        @test output2[5] == test2
+        destroy(output2.window)
+    end
 
-@testset "GtkOutput works" begin
-    output = GtkOutput(init; store=true)
-    sim!(output, ruleset; tspan=(1, 2))
-    resume!(output, ruleset; tstop=5)
-    @test output[3] == test
-    @test output[5] == test2
-    # TODO @test the canvaas images == leonardo2
-    destroy(output.window)
+    @testset "GtkOutput stored simulation matches glider behavior" begin
+        # TODO test Gtk canvas image
+        # g0 = RGB24(0)
+        # g1 = RGB24(1)
+        # grey2 = [g0 g0 g0 g0 g0 g0
+        #          g0 g0 g0 g0 g0 g0
+        #          g1 g0 g0 g0 g1 g1
+        #          g1 g0 g0 g0 g0 g0
+        #          g0 g0 g0 g0 g0 g1
+        #          g0 g0 g0 g0 g0 g0]
+
+        # l0 = get(ColorSchemes.leonardo, 0)
+        # l1 = get(ColorSchemes.leonardo, 1)
+
+        # leonardo2 = [l0 l0 l0 l0 l0 l0
+        #              l0 l0 l0 l0 l0 l0
+        #              l1 l0 l0 l0 l1 l1
+        #              l1 l0 l0 l0 l0 l0
+        #              l0 l0 l0 l0 l0 l1
+        #              l0 l0 l0 l0 l0 l0]
+        
+        output = GtkOutput(init; store=true)
+        sim!(output, ruleset; tspan=(1, 2))
+        resume!(output, ruleset; tstop=5)
+        @test output[3] == test
+        @test output[5] == test2
+        # TODO @test the canvaas images == leonardo2
+        destroy(output.window)
+    end
 end
 
 
