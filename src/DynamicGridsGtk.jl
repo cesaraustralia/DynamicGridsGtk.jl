@@ -11,7 +11,7 @@ import DynamicGrids: showframe, isrunning
 
 export GtkOutput
 
-abstract type AbstractGtkOutput{T} <: AbstractImageOutput{T} end
+abstract type AbstractGtkOutput{T} <: ImageOutput{T} end
 
 """
     GtkOutput(init)
