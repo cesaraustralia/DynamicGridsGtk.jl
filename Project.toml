@@ -13,6 +13,16 @@ Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 Mixers = "2a8e4939-dab8-5edc-8f64-72a8776f13de"
 
+[compat]
+julia = "1"
+Colors = "0.9"
+Cairo = "0.6"
+DynamicGrids = "0.2"
+FieldDefaults = "0.1"
+Graphics = "0.4"
+Images = "0.18"
+Mixers = "0.1"
+
 [extras]
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
