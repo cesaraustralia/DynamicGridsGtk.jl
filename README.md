@@ -12,9 +12,13 @@ using DynamicGridsGtk
 output = GtkOutput(init; fps=25, showfps=fps, store=false, processor=ColorProcessor())
 ```
 
-Where init is the init array for the simulation. Keyword arguments are
+Where `init` is the initialisation array for the simulation, and processor can
+be any `FrameProcessor` from DynamicGrids.jl. Keyword arguments are
 optional, with defaults shown above.
 
 ## Documentation
 
 See the documentation for [DynamicGrids.jl](https://cesaraustralia.github.io/DynamicGrids.jl/dev/)
+
+Note: using Gtk on Windows will lead to very slow performance of the REPL and
+IDEs like Atom. Use DynamicGridsInteract instead.
