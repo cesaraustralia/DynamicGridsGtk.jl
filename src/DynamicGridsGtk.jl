@@ -14,41 +14,55 @@ export GtkOutput
 abstract type AbstractGtkOutput{T} <: ImageOutput{T} end
 
 """
-    GtkOutput(init)
+    GtkOutput(init::AbstractMatrix, ruleset; fps=25, showfps=fps, store=false,
+                   processor=ColorProcessor(), extrainit=Dict())
 
 Constructor for GtkOutput.
 
 ### Arguments:
-- `frames::AbstractVector`: Vector of frames
-- `args`: any additional arguments to be passed to the model rule
+- `init::AbstractArray`: initialisation array. 
 
 ### Keyword Arguments:
-- `fps`: frames per second
-- `showfps`: maximum displayed frames per second
+- `fps::Real`: frames per second
+- `showfps::Real`: maximum displayed frames per second
+- `store::Bool`: store the simulation frames to be used afterwards
+- `processor::FrameProcessor
+- `minval::Number`: Minumum value to display in the simulaiton
+- `maxval::Number`: Maximum value to display in the simulaiton
 """
 @Image @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
+    # Field   | Default
     window::W | nothing
     canvas::C | nothing
+    GtkOutput(frames::T, running::Bool, starttime::Any, stoptime::Any, fps::FPS, showfps::SFPS, 
+              timestamp::TS, stampframe::SF, store::Bool, processor::P, minval::Mi, maxval::Ma, 
+              window, canvas) where {T<:AbstractVector,FPS,SFPS,TS,SF,P,Mi,Ma} = begin
+        window, canvas = newwindow()
+        output = new{T,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
+                     frames[:], running, starttime, stoptime, fps, showfps, timestamp,
+                     stampframe, store, processor, minval, maxval, window, canvas)
+        initialise!(output)
+    end
 end
 window(o) = o.window
 canvas(o) = o.canvas
 
-GtkOutput(frames::T, running::Bool, starttime::Any, stoptime::Any, fps::FPS, showfps::SFPS, 
-          timestamp::TS, stampframe::SF, store::Bool, processor::P, minval::Mi, maxval::Ma, 
-          window, canvas) where {T<:AbstractVector,FPS,SFPS,TS,SF,P,Mi,Ma} = begin
+newwindow() =  begin
     canvas = Gtk.@GtkCanvas()
     window = Gtk.Window(canvas, "DynamicGrids Gtk Ouput")
-    output = GtkOutput{T,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
-                 frames[:], running, starttime, stoptime, fps, showfps, timestamp,
-                 stampframe, store, processor, minval, maxval, window, canvas)
-
-    canvas.mouse.button1press = (widget, event) -> output.running = false
-    show(canvas)
-    output
+    window, canvas 
 end
 
+initialise!(o::AbstractGtkOutput) = begin
+    canvas(o).mouse.button1press = (widget, event) -> o.running = false
+    show(canvas(o))
+    showframe(o, 1)
+    o
+end
 
-DynamicGrids.isrunning(o::AbstractGtkOutput) = o.running && o.canvas.is_realized
+isalive(o::AbstractGtkOutput) = canvas(o).is_realized
+
+DynamicGrids.isrunning(o::AbstractGtkOutput) = o.running && isalive(o)
 
 DynamicGrids.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, f) = begin
     # Cairo shows images permuted
@@ -62,5 +76,11 @@ DynamicGrids.showframe(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, f) =
 end
 
 DynamicGrids.isasync(o::GtkOutput) = false
+
+Base.display(o::AbstractGtkOutput) =
+    if !isalive(o)
+        o.window, o.canvas = newwindow()
+        initialise!(o)
+    end
 
 end

@@ -65,6 +65,13 @@ ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
         @test output[5] == test2
         # TODO @test the canvaas images == leonardo2
         destroy(output.window)
+        @testset "display" begin
+            @test DynamicGridsGtk.isalive(output) == false
+            display(output)
+            @test DynamicGridsGtk.isalive(output) == true
+            destroy(output.window)
+            @test DynamicGridsGtk.isalive(output) == false
+        end
     end
 end
 
