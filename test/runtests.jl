@@ -26,7 +26,7 @@ test2 = [0 0 0 0 0 0
 
 @testset "Simulation" begin
 
-ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
+    ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
 
     @testset "converted results from ArrayOutput match glider behaviour" begin
         output = ArrayOutput(init, 5)
@@ -94,11 +94,11 @@ end
 
     @testset "GtkOutput works" begin
         output = GtkOutput(int)
-        DynamicGrids.showframe(output, 1)
+        DynamicGrids.showgrid(output, 1)
         Gtk.destroy(output.window)
 
         output = GtkOutput(flt)
-        DynamicGrids.showframe(output, 1)
+        DynamicGrids.showgrid(output, 1)
         Gtk.destroy(output.window)
     end
 end
