@@ -20,7 +20,7 @@ DynamicGrids = "0.4"
 FieldDefaults = "0.1"
 Graphics = "1"
 Gtk = "1"
-Images = "0.19, 0.20"
+Images = "0.19, 0.20, 0.21"
 Mixers = "0.1"
 julia = "1.3"
 
