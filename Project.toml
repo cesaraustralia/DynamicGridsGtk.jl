@@ -1,7 +1,7 @@
 name = "DynamicGridsGtk"
 uuid = "db222a54-9a4e-11e9-2a63-0f03ae0fd449"
 authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
