@@ -54,10 +54,13 @@ newwindow() =  begin
 end
 
 initialise!(o::AbstractGtkOutput) = begin
+    if !isalive(o)
+        o.running = false
+    end
     canvas(o).mouse.button1press = (widget, event) -> o.running = false
     show(canvas(o))
     showgrid(o, 1, starttime(o))
-    o
+    return o
 end
 
 isalive(o::AbstractGtkOutput) = canvas(o).is_realized
