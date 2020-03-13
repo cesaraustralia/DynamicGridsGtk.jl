@@ -15,7 +15,7 @@ Mixers = "2a8e4939-dab8-5edc-8f64-72a8776f13de"
 
 [compat]
 Cairo = "1"
-Colors = "0.9, 0.11"
+Colors = "0.9, 0.11, 0.12"
 DynamicGrids = "0.5"
 FieldDefaults = "0.1"
 Graphics = "1"
