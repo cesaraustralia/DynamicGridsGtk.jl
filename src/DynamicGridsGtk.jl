@@ -2,7 +2,10 @@ module DynamicGridsGtk
 # Use the README as the module docs
 @doc read(joinpath(dirname(@__DIR__), "README.md"), String) DynamicGridsGtk
 
-using DynamicGrids, Cairo, Gtk, Graphics, FieldDefaults
+using DynamicGrids, 
+      Cairo, 
+      Gtk, 
+      Graphics
 
 # Mixins
 using DynamicGrids: @Image, @Graphic, @Output
