@@ -5,7 +5,8 @@ module DynamicGridsGtk
 using DynamicGrids, 
       Cairo, 
       Gtk, 
-      Graphics
+      Graphics, 
+      FieldDefaults
 
 # Mixins
 using DynamicGrids: @Image, @Graphic, @Output
