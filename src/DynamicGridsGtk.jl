@@ -2,7 +2,7 @@ module DynamicGridsGtk
 # Use the README as the module docs
 @doc read(joinpath(dirname(@__DIR__), "README.md"), String) DynamicGridsGtk
 
-using DynamicGrids, Cairo, Gtk, Images, Graphics, Colors, FieldDefaults
+using DynamicGrids, Cairo, Gtk, Graphics, FieldDefaults
 
 # Mixins
 using DynamicGrids: @Image, @Graphic, @Output
@@ -34,11 +34,11 @@ Constructor for GtkOutput.
     # Field   | Default
     window::W | nothing
     canvas::C | nothing
-    GtkOutput(frames::T, running::Bool, starttime::Any, stoptime::Any, fps::FPS, showfps::SFPS,
+    GtkOutput(frames::A, running::Bool, starttime::Any, stoptime::Any, fps::FPS, showfps::SFPS,
               timestamp::TS, stampframe::SF, store::Bool, processor::P, minval::Mi, maxval::Ma,
-              window, canvas) where {T<:AbstractVector,FPS,SFPS,TS,SF,P,Mi,Ma} = begin
+              window, canvas) where {A<:AbstractVector,FPS,SFPS,TS,SF,P,Mi,Ma} = begin
         window, canvas = newwindow()
-        output = new{T,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
+        output = new{eltype(A),A,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
                      frames[:], running, starttime, stoptime, fps, showfps, timestamp,
                      stampframe, store, processor, minval, maxval, window, canvas)
         initialise!(output)
@@ -67,10 +67,9 @@ isalive(o::AbstractGtkOutput) = canvas(o).is_realized
 
 DynamicGrids.isrunning(o::AbstractGtkOutput) = o.running && isalive(o)
 
-DynamicGrids.showgrid(image::AbstractArray{RGB24,2}, o::AbstractGtkOutput, f, t) = begin
+DynamicGrids.showimage(image::AbstractArray, o::AbstractGtkOutput, f, t) = begin
     # Cairo shows images permuted
     img = permutedims(image)
-    println("frame: $f at: $t")
     Gtk.@guarded Gtk.draw(canvas(o)) do widget
         ctx = Gtk.getgc(canvas(o))
         Cairo.image(ctx, Cairo.CairoImageSurface(img), 0, 0,
