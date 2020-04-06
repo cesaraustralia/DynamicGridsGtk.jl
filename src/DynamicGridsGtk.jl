@@ -11,7 +11,7 @@ using DynamicGrids,
 # Mixins
 using DynamicGrids: @Image, @Graphic, @Output
 
-import DynamicGrids: showgrid, isrunning, starttime
+import DynamicGrids: showgrid, isrunning, starttime, initialise
 
 export GtkOutput
 
@@ -45,7 +45,7 @@ Constructor for GtkOutput.
         output = new{eltype(A),A,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
                      frames[:], running, starttime, stoptime, fps, showfps, timestamp,
                      stampframe, store, processor, minval, maxval, window, canvas)
-        initialise!(output)
+        initialise(output)
     end
 end
 window(o) = o.window
@@ -57,19 +57,23 @@ newwindow() =  begin
     window, canvas
 end
 
-initialise!(o::AbstractGtkOutput) = begin
+DynamicGrids.initialise(o::AbstractGtkOutput) = begin
+    o.running && return o
     if !isalive(o)
-        o.running = false
+        o.window, o.canvas = newwindow()
     end
     canvas(o).mouse.button1press = (widget, event) -> o.running = false
     show(canvas(o))
     showgrid(o, 1, starttime(o))
+    println("alive ", isalive(o))
     return o
 end
 
 isalive(o::AbstractGtkOutput) = canvas(o).is_realized
 
-DynamicGrids.isrunning(o::AbstractGtkOutput) = o.running && isalive(o)
+DynamicGrids.isrunning(o::AbstractGtkOutput) = begin
+    o.running && isalive(o)
+end
 
 DynamicGrids.showimage(image::AbstractArray, o::AbstractGtkOutput, f, t) = begin
     # Cairo shows images permuted
@@ -85,8 +89,7 @@ DynamicGrids.isasync(o::GtkOutput) = false
 
 Base.display(o::AbstractGtkOutput) =
     if !isalive(o)
-        o.window, o.canvas = newwindow()
-        initialise!(o)
+        initialise(o)
     end
 
 end
