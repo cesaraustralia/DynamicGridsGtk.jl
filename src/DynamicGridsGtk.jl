@@ -65,7 +65,6 @@ DynamicGrids.initialise(o::AbstractGtkOutput) = begin
     canvas(o).mouse.button1press = (widget, event) -> o.running = false
     show(canvas(o))
     showgrid(o, 1, starttime(o))
-    println("alive ", isalive(o))
     return o
 end
 
