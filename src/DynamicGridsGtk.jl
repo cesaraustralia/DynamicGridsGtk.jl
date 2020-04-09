@@ -84,7 +84,7 @@ DynamicGrids.showimage(image::AbstractArray, o::AbstractGtkOutput, f, t) = begin
     end
 end
 
-DynamicGrids.isasync(o::GtkOutput) = false
+DynamicGrids.isasync(o::AbstractGtkOutput) = false
 
 Base.display(o::AbstractGtkOutput) =
     if !isalive(o)
