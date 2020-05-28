@@ -1,7 +1,7 @@
 name = "DynamicGridsGtk"
 uuid = "db222a54-9a4e-11e9-2a63-0f03ae0fd449"
 authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
-version = "0.3.4"
+version = "0.4.0"
 
 [deps]
 Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
@@ -12,7 +12,7 @@ Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
 
 [compat]
 Cairo = "1"
-DynamicGrids = "0.7, 0.8"
+DynamicGrids = "0.9"
 FieldDefaults = "0.3"
 Graphics = "1"
 Gtk = "1"
