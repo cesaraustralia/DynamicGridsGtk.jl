@@ -8,9 +8,6 @@ using DynamicGrids,
       Graphics, 
       FieldDefaults
 
-# Mixins
-using DynamicGrids: @Image, @Graphic, @Output
-
 import DynamicGrids: showgrid, isrunning, starttime, initialise
 
 export GtkOutput
@@ -18,8 +15,8 @@ export GtkOutput
 abstract type AbstractGtkOutput{T} <: ImageOutput{T} end
 
 """
-    GtkOutput(init::AbstractMatrix, ruleset; fps=25, showfps=fps, store=false,
-                   processor=ColorProcessor(), extrainit=Dict())
+    GtkOutput(init::AbstractMatrix; fps=25, store=false,
+              processor=ColorProcessor(), extrainit=Dict())
 
 Constructor for GtkOutput.
 
@@ -27,40 +24,38 @@ Constructor for GtkOutput.
 - `init::AbstractArray`: initialisation array.
 
 ### Keyword Arguments:
-- `fps::Real`: frames per second
-- `showfps::Real`: maximum displayed frames per second
-- `store::Bool`: store the simulation grids to be used afterwards
-- `processor::FrameProcessor
-- `minval::Number`: Minumum value to display in the simulaiton
-- `maxval::Number`: Maximum value to display in the simulaiton
+- `tspan`: `AbstractRange` timespan for the simulation
+- `fps::Real`: frames per second to display the simulation
+- `store::Bool`: whether ot store the simulation frames for later use
+- `processor`: `GridProcessor` to convert output grid(s) to an image.
+- `minval::Number`: minumum value to display in the simulaiton
+- `maxval::Number`: maximum value to display in the simulaiton
 """
-@Image @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
-    # Field   | Default
-    window::W | nothing
-    canvas::C | nothing
-    GtkOutput(frames::A, running::Bool, starttime::Any, stoptime::Any, fps::FPS, showfps::SFPS,
-              timestamp::TS, stampframe::SF, store::Bool, processor::P, minval::Mi, maxval::Ma,
-              window, canvas) where {A<:AbstractVector,FPS,SFPS,TS,SF,P,Mi,Ma} = begin
-        window, canvas = newwindow()
-        output = new{eltype(A),A,FPS,SFPS,TS,SF,P,Mi,Ma,typeof(window),typeof(canvas)}(
-                     frames[:], running, starttime, stoptime, fps, showfps, timestamp,
-                     stampframe, store, processor, minval, maxval, window, canvas)
-        initialise(output)
-    end
+mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T}
+    frames::F
+    running::Bool 
+    extent::E
+    graphicconfig::GC
+    imageconfig::IC
+    window::W
+    canvas::C
 end
+# Defaults are passed in from ImageOutput constructor
+GtkOutput(; frames, running, extent, graphicconfig, imageconfig, 
+          canvas=newcanvas(), window=newwindow(canvas), kwargs...) =
+    initialise(GtkOutput(frames, running, extent, graphicconfig, imageconfig, window, canvas))
+
 window(o) = o.window
 canvas(o) = o.canvas
 
-newwindow() =  begin
-    canvas = Gtk.@GtkCanvas()
-    window = Gtk.Window(canvas, "DynamicGrids Gtk Ouput")
-    window, canvas
-end
+newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Ouput")
+newcanvas() = Gtk.@GtkCanvas()
 
 DynamicGrids.initialise(o::AbstractGtkOutput) = begin
     o.running && return o
     if !isalive(o)
-        o.window, o.canvas = newwindow()
+        o.canvas = newcanvas()
+        o.window = newwindow(o.canvas) 
     end
     canvas(o).mouse.button1press = (widget, event) -> o.running = false
     show(canvas(o))

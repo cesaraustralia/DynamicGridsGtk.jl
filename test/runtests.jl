@@ -28,15 +28,6 @@ test2 = [0 0 0 0 0 0
 
     ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
 
-    @testset "converted results from ArrayOutput match glider behaviour" begin
-        output = ArrayOutput(init, 5)
-        sim!(output, ruleset; tspan=(1, 5))
-        output2 = GtkOutput(output)
-        @test output2[3] == test
-        @test output2[5] == test2
-        destroy(output2.window)
-    end
-
     @testset "GtkOutput stored simulation matches glider behavior" begin
         # TODO test Gtk canvas image
         # g0 = RGB24(0)
@@ -58,8 +49,8 @@ test2 = [0 0 0 0 0 0
         #              l0 l0 l0 l0 l0 l1
         #              l0 l0 l0 l0 l0 l0]
         
-        output = GtkOutput(init; store=true)
-        sim!(output, ruleset; tspan=(1, 2))
+        output = GtkOutput(init; tspan=1:2, store=true)
+        sim!(output, ruleset)
         resume!(output, ruleset; tstop=5)
         @test output[3] == test
         @test output[5] == test2
@@ -93,11 +84,11 @@ end
            0 0 0 0 1 0]
 
     @testset "GtkOutput works" begin
-        output = GtkOutput(int)
+        output = GtkOutput(int; tspan=1:1)
         DynamicGrids.showgrid(output, 1)
         Gtk.destroy(output.window)
 
-        output = GtkOutput(flt)
+        output = GtkOutput(flt; tspan=1:1)
         DynamicGrids.showgrid(output, 1)
         Gtk.destroy(output.window)
     end
