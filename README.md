@@ -9,12 +9,13 @@ To create a Gtk window for use as a simulation output:
 
 ```julia
 using DynamicGridsGtk
-output = GtkOutput(init; fps=25, showfps=fps, store=false, processor=ColorProcessor())
+output = GtkOutput(init; tspan=1:100, fps=25, showfps=fps, store=false, processor=ColorProcessor())
 ```
 
 Where `init` is the initialisation array for the simulation, and processor can
-be any `FrameProcessor` from DynamicGrids.jl. Keyword arguments are
-optional, with defaults shown above.
+be any `GridProcessor` from DynamicGrids.jl, which can use ColorSchemes.jl schemes. 
+
+Keyword arguments are optional, with defaults shown above.
 
 ## Documentation
 
