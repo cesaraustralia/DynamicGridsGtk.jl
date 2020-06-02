@@ -8,9 +8,6 @@ using DynamicGrids,
       Graphics, 
       FieldDefaults
 
-# Mixins
-using DynamicGrids: @Image, @Graphic, @Output
-
 import DynamicGrids: showgrid, isrunning, starttime, initialise
 
 export GtkOutput
@@ -34,19 +31,19 @@ Constructor for GtkOutput.
 - `minval::Number`: minumum value to display in the simulaiton
 - `maxval::Number`: maximum value to display in the simulaiton
 """
-@Image @Graphic @Output mutable struct GtkOutput{W,C} <: AbstractGtkOutput{T}
+mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T}
+    frames::F
+    running::Bool 
+    extent::E
+    graphicconfig::GC
+    imageconfig::IC
     window::W
     canvas::C
 end
 # Defaults are passed in from ImageOutput constructor
-GtkOutput(; frames, init, mask, running, tspan, fps, timestamp, stampframe, store, 
-          processor, minval, maxval, canvas=newcanvas(), window=newwindow(canvas), kwargs...) = begin
-    output = GtkOutput(
-        frames, init, mask, running, tspan, fps, timestamp, stampframe, store, 
-        processor, minval, maxval, window, canvas
-    )
-    initialise(output)
-end
+GtkOutput(; frames, running, extent, graphicconfig, imageconfig, 
+          canvas=newcanvas(), window=newwindow(canvas), kwargs...) =
+    initialise(GtkOutput(frames, running, extent, graphicconfig, imageconfig, window, canvas))
 
 window(o) = o.window
 canvas(o) = o.canvas
