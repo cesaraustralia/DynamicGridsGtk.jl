@@ -2,26 +2,26 @@ using DynamicGrids, DynamicGridsGtk, Gtk, Test, Colors, ColorSchemes
 
 # life glider sims
 
-init =  [0 0 0 0 0 0
-         0 0 0 0 0 0
-         0 0 0 0 0 0
-         0 0 0 1 1 1
-         0 0 0 0 0 1
-         0 0 0 0 1 0]
+init =  Bool[0 0 0 0 0 0
+             0 0 0 0 0 0
+             0 0 0 0 0 0
+             0 0 0 1 1 1
+             0 0 0 0 0 1
+             0 0 0 0 1 0]
 
-test =  [0 0 0 0 0 0
-         0 0 0 0 0 0
-         0 0 0 0 1 1
-         0 0 0 1 0 1
-         0 0 0 0 0 1
-         0 0 0 0 0 0]
+test =  Bool[0 0 0 0 0 0
+             0 0 0 0 0 0
+             0 0 0 0 1 1
+             0 0 0 1 0 1
+             0 0 0 0 0 1
+             0 0 0 0 0 0]
 
-test2 = [0 0 0 0 0 0
-         0 0 0 0 0 0
-         1 0 0 0 1 1
-         1 0 0 0 0 0
-         0 0 0 0 0 1
-         0 0 0 0 0 0]
+test2 = Bool[0 0 0 0 0 0
+             0 0 0 0 0 0
+             1 0 0 0 1 1
+             1 0 0 0 0 0
+             0 0 0 0 0 1
+             0 0 0 0 0 0]
 
 
 @testset "Simulation" begin
@@ -63,6 +63,7 @@ test2 = [0 0 0 0 0 0
             destroy(output.window)
             @test DynamicGridsGtk.isalive(output) == false
         end
+
     end
 end
 
@@ -85,11 +86,11 @@ end
 
     @testset "GtkOutput works" begin
         output = GtkOutput(int; tspan=1:1)
-        DynamicGrids.showgrid(output, 1)
+        DynamicGrids.showframe(output, 1)
         Gtk.destroy(output.window)
-
         output = GtkOutput(flt; tspan=1:1)
-        DynamicGrids.showgrid(output, 1)
+        DynamicGrids.showframe(output, 1)
         Gtk.destroy(output.window)
     end
+
 end
