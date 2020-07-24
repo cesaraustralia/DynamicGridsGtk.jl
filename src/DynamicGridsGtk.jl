@@ -8,7 +8,7 @@ using DynamicGrids,
       Graphics, 
       FieldDefaults
 
-import DynamicGrids: showgrid, isrunning, starttime, initialise
+import DynamicGrids: showframe, isrunning, starttime, initialise
 
 export GtkOutput
 
@@ -59,7 +59,7 @@ DynamicGrids.initialise(o::AbstractGtkOutput) = begin
     end
     canvas(o).mouse.button1press = (widget, event) -> o.running = false
     show(canvas(o))
-    showgrid(o, 1, starttime(o))
+    showframe(o, 1, starttime(o))
     return o
 end
 
