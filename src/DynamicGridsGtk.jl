@@ -2,13 +2,13 @@ module DynamicGridsGtk
 # Use the README as the module docs
 @doc read(joinpath(dirname(@__DIR__), "README.md"), String) DynamicGridsGtk
 
-using DynamicGrids, 
-      Cairo, 
-      Gtk, 
-      Graphics, 
+using DynamicGrids,
+      Cairo,
+      Gtk,
+      Graphics,
       FieldDefaults
 
-import DynamicGrids: showframe, isrunning, starttime, initialise
+import DynamicGrids: showframe, isrunning, initialise, tspan
 
 export GtkOutput
 
@@ -33,7 +33,7 @@ Constructor for GtkOutput.
 """
 mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T}
     frames::F
-    running::Bool 
+    running::Bool
     extent::E
     graphicconfig::GC
     imageconfig::IC
@@ -41,7 +41,7 @@ mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutpu
     canvas::C
 end
 # Defaults are passed in from ImageOutput constructor
-GtkOutput(; frames, running, extent, graphicconfig, imageconfig, 
+GtkOutput(; frames, running, extent, graphicconfig, imageconfig,
           canvas=newcanvas(), window=newwindow(canvas), kwargs...) =
     initialise(GtkOutput(frames, running, extent, graphicconfig, imageconfig, window, canvas))
 
@@ -55,11 +55,11 @@ DynamicGrids.initialise(o::AbstractGtkOutput) = begin
     o.running && return o
     if !isalive(o)
         o.canvas = newcanvas()
-        o.window = newwindow(o.canvas) 
+        o.window = newwindow(o.canvas)
     end
     canvas(o).mouse.button1press = (widget, event) -> o.running = false
     show(canvas(o))
-    showframe(o, 1, starttime(o))
+    showframe(o, 1, first(tspan(o)))
     return o
 end
 
