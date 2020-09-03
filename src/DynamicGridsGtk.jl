@@ -48,7 +48,7 @@ GtkOutput(; frames, running, extent, graphicconfig, imageconfig,
 window(o) = o.window
 canvas(o) = o.canvas
 
-newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Ouput")
+newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Output")
 newcanvas() = Gtk.@GtkCanvas()
 
 DynamicGrids.initialise(o::AbstractGtkOutput) = begin
