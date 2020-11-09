@@ -26,7 +26,7 @@ test2 = Bool[0 0 0 0 0 0
 
 @testset "Simulation" begin
 
-    ruleset = Ruleset(Life(); init=init, overflow=WrapOverflow())
+    ruleset = Ruleset(Life(); overflow=WrapOverflow())
 
     @testset "GtkOutput stored simulation matches glider behavior" begin
         # TODO test Gtk canvas image
