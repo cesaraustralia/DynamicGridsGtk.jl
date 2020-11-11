@@ -12,7 +12,7 @@ Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
 
 [compat]
 Cairo = "1"
-DynamicGrids = "0.10, 0.11"
+DynamicGrids = "0.10, 0.11, 0.12"
 FieldDefaults = "0.3"
 Graphics = "1"
 Gtk = "1"
