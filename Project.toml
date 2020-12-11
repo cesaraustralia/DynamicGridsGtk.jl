@@ -6,14 +6,12 @@ version = "0.5.3"
 [deps]
 Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
 DynamicGrids = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
-FieldDefaults = "49426c49-986f-5969-8844-d5cc96441cfc"
 Graphics = "a2bd30eb-e257-5431-a919-1863eab51364"
 Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
 
 [compat]
 Cairo = "1"
 DynamicGrids = "0.10, 0.11, 0.12"
-FieldDefaults = "0.3"
 Graphics = "1"
 Gtk = "1"
 julia = "1"
