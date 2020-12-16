@@ -26,9 +26,9 @@ test2 = Bool[0 0 0 0 0 0
 
 @testset "Simulation" begin
 
-    ruleset = Ruleset(Life(); overflow=WrapOverflow())
+    ruleset = Ruleset(Life(); boundary=Wrap())
 
-    @testset "GtkOutput stored simulation matches glider behavior" begin
+  @testset "GtkOutput stored simulation matches glider behavior" begin
         # TODO test Gtk canvas image
         # g0 = RGB24(0)
         # g1 = RGB24(1)
@@ -57,11 +57,11 @@ test2 = Bool[0 0 0 0 0 0
         # TODO @test the canvaas images == leonardo2
         destroy(output.window)
         @testset "display" begin
-            @test DynamicGridsGtk.isalive(output) == false
+            @test DynamicGridsGtk._isalive(output) == false
             display(output)
-            @test DynamicGridsGtk.isalive(output) == true
+            @test DynamicGridsGtk._isalive(output) == true
             destroy(output.window)
-            @test DynamicGridsGtk.isalive(output) == false
+            @test DynamicGridsGtk._isalive(output) == false
         end
 
     end
@@ -84,12 +84,15 @@ end
            0 0 0 0 0 1
            0 0 0 0 1 0]
 
+    ruleset = Ruleset(Life(); boundary=Wrap())
+
     @testset "GtkOutput works" begin
         output = GtkOutput(int; tspan=1:1)
-        DynamicGrids.showframe(output, 1)
+        data = DynamicGrids.SimData(output, ruleset)
+        DynamicGrids.showframe(output, data)
         Gtk.destroy(output.window)
         output = GtkOutput(flt; tspan=1:1)
-        DynamicGrids.showframe(output, 1)
+        DynamicGrids.showframe(output, data)
         Gtk.destroy(output.window)
     end
 
