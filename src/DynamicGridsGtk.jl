@@ -5,14 +5,13 @@ module DynamicGridsGtk
 using DynamicGrids,
       Cairo,
       Gtk,
-      Graphics,
-      FieldDefaults
+      Graphics
 
-import DynamicGrids: showframe, isrunning, initialise, tspan
+const DG = DynamicGrids
 
 export GtkOutput
 
-abstract type AbstractGtkOutput{T} <: ImageOutput{T} end
+abstract type AbstractGtkOutput{T,F} <: ImageOutput{T,F} end
 
 """
     GtkOutput(init::AbstractMatrix; fps=25, store=false,
@@ -26,12 +25,12 @@ Constructor for GtkOutput.
 ### Keyword Arguments:
 - `tspan`: `AbstractRange` timespan for the simulation
 - `fps::Real`: frames per second to display the simulation
-- `store::Bool`: whether ot store the simulation frames for later use
+- `store::Bool`: whether to store the simulation frames for later use
 - `processor`: `GridProcessor` to convert output grid(s) to an image.
 - `minval::Number`: minumum value to display in the simulaiton
 - `maxval::Number`: maximum value to display in the simulaiton
 """
-mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T}
+mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T,F}
     frames::F
     running::Bool
     extent::E
@@ -41,35 +40,26 @@ mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutpu
     canvas::C
 end
 # Defaults are passed in from ImageOutput constructor
-GtkOutput(; frames, running, extent, graphicconfig, imageconfig,
-          canvas=newcanvas(), window=newwindow(canvas), kwargs...) =
-    initialise(GtkOutput(frames, running, extent, graphicconfig, imageconfig, window, canvas))
+function GtkOutput(; 
+    frames, running, extent, graphicconfig, imageconfig,
+    canvas=_newcanvas(), window=_newwindow(canvas), kwargs...
+)
+    GtkOutput(frames, running, extent, graphicconfig, imageconfig, window, canvas) |> _initialise
+end
 
 window(o) = o.window
 canvas(o) = o.canvas
 
-newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Output")
-newcanvas() = Gtk.@GtkCanvas()
+_newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Output")
+_newcanvas() = Gtk.@GtkCanvas()
 
-DynamicGrids.initialise(o::AbstractGtkOutput) = begin
-    o.running && return o
-    if !isalive(o)
-        o.canvas = newcanvas()
-        o.window = newwindow(o.canvas)
-    end
-    canvas(o).mouse.button1press = (widget, event) -> o.running = false
-    show(canvas(o))
-    showframe(o, 1, first(tspan(o)))
-    return o
+DG.isrunning(o::AbstractGtkOutput) = o.running && _isalive(o)
+DG.isasync(o::AbstractGtkOutput) = false
+DG.initialisegraphics(o::AbstractGtkOutput, data::DG.AbstractSimData) = begin
+    _initialise(o)
+    DG.showframe(o, data)
 end
-
-isalive(o::AbstractGtkOutput) = canvas(o).is_realized
-
-DynamicGrids.isrunning(o::AbstractGtkOutput) = begin
-    o.running && isalive(o)
-end
-
-DynamicGrids.showimage(image::AbstractArray, o::AbstractGtkOutput, f, t) = begin
+DG.showimage(image::AbstractArray, o::AbstractGtkOutput, data::DG.AbstractSimData) = begin
     # Cairo shows images permuted
     img = permutedims(image)
     Gtk.@guarded Gtk.draw(canvas(o)) do widget
@@ -79,11 +69,23 @@ DynamicGrids.showimage(image::AbstractArray, o::AbstractGtkOutput, f, t) = begin
     end
 end
 
-DynamicGrids.isasync(o::AbstractGtkOutput) = false
-
 Base.display(o::AbstractGtkOutput) =
-    if !isalive(o)
-        initialise(o)
+    if !_isalive(o)
+        _initialise(o)
     end
+
+
+_isalive(o::AbstractGtkOutput) = canvas(o).is_realized
+
+function _initialise(o::AbstractGtkOutput)
+    o.running && return o
+    if !_isalive(o)
+        o.canvas = _newcanvas()
+        o.window = _newwindow(o.canvas)
+    end
+    canvas(o).mouse.button1press = (widget, event) -> DG.setrunning!(o, false)
+    show(canvas(o))
+    return o
+end
 
 end
