@@ -88,7 +88,7 @@ end
 
     @testset "GtkOutput works" begin
         output = GtkOutput(int; tspan=1:1)
-        data = DynamicGrids.SimData(output, ruleset)
+        data = DynamicGrids.SimData(output.extent, ruleset)
         DynamicGrids.showframe(output, data)
         Gtk.destroy(output.window)
         output = GtkOutput(flt; tspan=1:1)
