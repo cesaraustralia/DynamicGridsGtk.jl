@@ -19,16 +19,23 @@ abstract type AbstractGtkOutput{T,F} <: ImageOutput{T,F} end
 
 Constructor for GtkOutput.
 
-### Arguments:
+# Arguments
+
 - `init::AbstractArray`: initialisation array.
 
-### Keyword Arguments:
+# Keywords
+
 - `tspan`: `AbstractRange` timespan for the simulation
-- `fps::Real`: frames per second to display the simulation
-- `store::Bool`: whether to store the simulation frames for later use
-- `processor`: `GridProcessor` to convert output grid(s) to an image.
-- `minval::Number`: minumum value to display in the simulaiton
-- `maxval::Number`: maximum value to display in the simulaiton
+- `aux`: NamedTuple of arbitrary input data. Use `get(data, Aux(:key), I...)` 
+    to access from a `Rule` in a type-stable way.
+- `mask`: `BitArray` for defining cells that will/will not be run.
+- `padval`: padding value for grids with neighborhood rules. The default is `zero(eltype(init))`.
+- `font`: `String` font name, used in default `TextConfig`. A default will be guessed.
+- `text`: [`TextConfig`](@ref) object or `nothing` for no text.
+- `scheme`: ColorSchemes.jl scheme, or `Greyscale()`
+- `imagegen`: [`ImageGenerator`](@ref)
+- `minval`: minimum value(s) to set colour maximum
+- `maxval`: maximum values(s) to set colour minimum
 """
 mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T,F}
     frames::F
