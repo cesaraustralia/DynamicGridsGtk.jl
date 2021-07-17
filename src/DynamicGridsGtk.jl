@@ -11,6 +11,7 @@ const DG = DynamicGrids
 
 export GtkOutput
 
+
 abstract type AbstractGtkOutput{T,F} <: ImageOutput{T,F} end
 
 """
@@ -31,11 +32,11 @@ Constructor for GtkOutput.
 - `mask`: `BitArray` for defining cells that will/will not be run.
 - `padval`: padding value for grids with neighborhood rules. The default is `zero(eltype(init))`.
 - `font`: `String` font name, used in default `TextConfig`. A default will be guessed.
-- `text`: [`TextConfig`](@ref) object or `nothing` for no text.
-- `scheme`: ColorSchemes.jl scheme, or `Greyscale()`
-- `imagegen`: [`ImageGenerator`](@ref)
-- `minval`: minimum value(s) to set colour maximum
-- `maxval`: maximum values(s) to set colour minimum
+- `text`: `TextConfig` object or `nothing` for no text.
+- `scheme`: ColorSchemes.jl scheme, or `Greyscale()`.
+- `renderer`: `Renderer` such as `Layout` or `Image`.
+- `minval`: minimum value(s) to set colour maximum.
+- `maxval`: maximum values(s) to set colour minimum.
 """
 mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T,F}
     frames::F
@@ -46,27 +47,26 @@ mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutpu
     window::W
     canvas::C
 end
-# Defaults are passed in from ImageOutput constructor
 function GtkOutput(; 
+    # Defaults are passed in from the generic ImageOutput constructor
     frames, running, extent, graphicconfig, imageconfig,
     canvas=_newcanvas(), window=_newwindow(canvas), kwargs...
 )
     GtkOutput(frames, running, extent, graphicconfig, imageconfig, window, canvas) |> _initialise
 end
 
+# Getters
 window(o) = o.window
 canvas(o) = o.canvas
 
-_newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Output")
-_newcanvas() = Gtk.@GtkCanvas()
-
+# DynamicGrids Output/GraphicOutput/ImageOutput interface
 DG.isrunning(o::AbstractGtkOutput) = o.running && _isalive(o)
 DG.isasync(o::AbstractGtkOutput) = false
-DG.initialisegraphics(o::AbstractGtkOutput, data::DG.AbstractSimData) = begin
+function DG.initialisegraphics(o::AbstractGtkOutput, data::DG.AbstractSimData)
     _initialise(o)
     DG.showframe(o, data)
 end
-DG.showimage(image::AbstractArray, o::AbstractGtkOutput, data::DG.AbstractSimData) = begin
+function DG.showimage(image::AbstractArray, o::AbstractGtkOutput, data::DG.AbstractSimData)
     # Cairo shows images permuted
     img = permutedims(image)
     Gtk.@guarded Gtk.draw(canvas(o)) do widget
@@ -76,11 +76,12 @@ DG.showimage(image::AbstractArray, o::AbstractGtkOutput, data::DG.AbstractSimDat
     end
 end
 
-Base.display(o::AbstractGtkOutput) =
-    if !_isalive(o)
-        _initialise(o)
-    end
+# Base interface
+Base.display(o::AbstractGtkOutput) = _isalive(o) || _initialise(o)
 
+# Local methods
+_newwindow(canvas) = Gtk.Window(canvas, "DynamicGrids Gtk Output")
+_newcanvas() = Gtk.@GtkCanvas()
 
 _isalive(o::AbstractGtkOutput) = canvas(o).is_realized
 
