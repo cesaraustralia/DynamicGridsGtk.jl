@@ -15,28 +15,33 @@ export GtkOutput
 abstract type AbstractGtkOutput{T,F} <: ImageOutput{T,F} end
 
 """
-    GtkOutput(init::AbstractMatrix; fps=25, store=false,
-              processor=ColorProcessor(), extrainit=Dict())
+    GtkOutput(init; kw...)
 
 Constructor for GtkOutput.
 
 # Arguments
 
-- `init::AbstractArray`: initialisation array.
+- `init`: initialisation `AbstractArray` or `NamedTuple` of `AbstractArray`
 
 # Keywords
 
-- `tspan`: `AbstractRange` timespan for the simulation
-- `aux`: NamedTuple of arbitrary input data. Use `get(data, Aux(:key), I...)` 
-    to access from a `Rule` in a type-stable way.
-- `mask`: `BitArray` for defining cells that will/will not be run.
-- `padval`: padding value for grids with neighborhood rules. The default is `zero(eltype(init))`.
-- `font`: `String` font name, used in default `TextConfig`. A default will be guessed.
-- `text`: `TextConfig` object or `nothing` for no text.
-- `scheme`: ColorSchemes.jl scheme, or `Greyscale()`.
-- `renderer`: `Renderer` such as `Layout` or `Image`.
-- `minval`: minimum value(s) to set colour maximum.
-- `maxval`: maximum values(s) to set colour minimum.
+#### `DynamicGrids.Extent` keywords:
+
+$(DynamicGrids.EXTENT_KEYWORDS)
+
+An `Extent` object can be also passed to the `extent` keyword, and other keywords will be ignored.
+
+#### `DynamicGrids.GraphicConfig` keywords:
+
+$(DynamicGrids.GRAPHICCONFIG_KEYWORDS)
+
+A `GraphicConfig` object can be also passed to the `graphicconfig` keyword, and other keywords will be ignored.
+
+#### `DynamicGrids.ImageConfig` keywords:
+
+$(DynamicGrids.IMAGECONFIG_KEYWORDS)
+
+An `ImageConfig` object can be also passed to the `imageconfig` keyword, and other keywords will be ignored.
 """
 mutable struct GtkOutput{T,F<:AbstractVector{T},E,GC,IC,W,C} <: AbstractGtkOutput{T,F}
     frames::F
