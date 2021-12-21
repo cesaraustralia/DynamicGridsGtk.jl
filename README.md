@@ -9,7 +9,7 @@ To create a Gtk window for use as a simulation output:
 
 ```julia
 using DynamicGridsGtk
-output = GtkOutput(init; tspan=1:100, fps=25, showfps=fps, store=false, processor=ColorProcessor())
+output = GtkOutput(init; tspan=1:100, fps=25)
 ```
 
 Where `init` is the initialisation array for the simulation, and processor can
